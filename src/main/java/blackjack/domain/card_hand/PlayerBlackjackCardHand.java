@@ -1,23 +1,24 @@
 package blackjack.domain.card_hand;
 
+import blackjack.domain.WinningStatus;
+import blackjack.domain.card_hand.state.BlackjackCardHandState;
+import blackjack.domain.card_hand.state.running.Start;
+import blackjack.domain.deck.CardDrawer;
 import java.util.List;
 
 import blackjack.domain.card.Card;
 import blackjack.domain.deck.BlackjackCardHandInitializer;
 import blackjack.domain.player.Player;
 
-public final class PlayerBlackjackCardHand implements BlackjackWinDeterminable {
+public final class PlayerBlackjackCardHand {
     
-    private static final int BUST_THRESHOLD = 21;
-    private static final int BLACKJACK_SUM = 21;
-    
-    private final BlackjackCardHand cardHand;
+    private BlackjackCardHandState cardHandState;
     private final Player player;
     
     public PlayerBlackjackCardHand(final Player player, final BlackjackCardHandInitializer initializer) {
         validateNotNull(player, initializer);
-        this.cardHand = new BlackjackCardHand(initializer);
         this.player = player;
+        cardHandState = new Start(initializer).initializeCards();
     }
     
     private void validateNotNull(final Player player, final BlackjackCardHandInitializer initializer) {
@@ -30,14 +31,11 @@ public final class PlayerBlackjackCardHand implements BlackjackWinDeterminable {
     }
     
     public List<Card> getInitialCards() {
-        return List.of(cardHand.getCards().getFirst(), cardHand.getCards().get(1));
+        return List.of(cardHandState.getCards().getFirst(), cardHandState.getCards().get(1));
     }
     
     public void addCard(final Card card) {
-        if (getBlackjackSum() >= BLACKJACK_SUM) {
-            throw new IllegalStateException("카드를 더 받을 수 없습니다.");
-        }
-        cardHand.addCard(card);
+        cardHandState = cardHandState.addCard(card);
     }
     
     public String getPlayerName() {
@@ -49,24 +47,26 @@ public final class PlayerBlackjackCardHand implements BlackjackWinDeterminable {
     }
     
     public List<Card> getCards() {
-        return cardHand.getCards();
+        return cardHandState.getCards();
     }
-    
-    @Override
+
+    public BlackjackCardHandState getCardHandState() {
+        return cardHandState;
+    }
+
+    public WinningStatus determineWinningStatus(BlackjackCardHandState otherState) {
+        return cardHandState.determineWinningStatus(otherState);
+    }
+
     public int getBlackjackSum() {
-        return cardHand.getBlackjackSum();
+        return cardHandState.getBlackjackSum();
     }
-    
-    @Override
-    public int getSize() {
-        return cardHand.getCards().size();
+
+    public void stand() {
+        cardHandState = cardHandState.stand();
     }
-    
-    public boolean isAddedTo21() {
-        return getBlackjackSum() == BLACKJACK_SUM;
-    }
-    
-    public boolean isBust() {
-        return getBlackjackSum() > BUST_THRESHOLD;
+
+    public boolean canHit() {
+        return !cardHandState.isFinished();
     }
 }

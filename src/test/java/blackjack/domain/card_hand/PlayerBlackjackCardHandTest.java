@@ -24,11 +24,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class PlayerBlackjackCardHandTest {
-    
+
     @Test
     void 생성자의_파라미터가_NULL이면_예외를_발생시킨다() {
         // given
-        
+
         // expected
         assertAll(
                 () -> assertThatThrownBy(() -> new PlayerBlackjackCardHand(null, List::of))
@@ -39,7 +39,7 @@ public class PlayerBlackjackCardHandTest {
                         .hasMessage("초기 카드 지급 방식은 null이 될 수 없습니다.")
         );
     }
-    
+
     @Test
     void 손패를_가진_플레이어의_이름을_확인할_수_있다() {
         // given
@@ -210,37 +210,6 @@ public class PlayerBlackjackCardHandTest {
                 Arguments.of(List.of(HEART_9, HEART_10), 21),
                 Arguments.of(List.of(), 12)
                 );
-    }
-    
-    @Test
-    void 내_손패가_버스트인지_알_수_있다() {
-        // given
-        final PlayerBlackjackCardHand player = new PlayerBlackjackCardHand(DEFAULT_PLAYER, () -> List.of(
-                HEART_10,
-                DIAMOND_10,
-                HEART_2
-        ));
-
-        // when
-        final boolean result = player.isBust();
-
-        // then
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void 내_손패가_21인지_알_수_있다() {
-        // given
-        final PlayerBlackjackCardHand player = new PlayerBlackjackCardHand(DEFAULT_PLAYER, () -> List.of(
-                HEART_10,
-                DIAMOND_1
-        ));
-
-        // when
-        final boolean result = player.isAddedTo21();
-
-        // then
-        assertThat(result).isTrue();
     }
 
     @Test

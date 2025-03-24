@@ -30,12 +30,8 @@ public final class BlackjackJudge {
             throw new IllegalArgumentException("플래이어의 손패는 null이 될 수 없습니다.");
         }
     }
-    
+
     public int getDealerBlackjackWinningCount() {
-        return getCountOf(WinningStatus.BLACKJACK_WIN);
-    }
-    
-    public int getDealerWinningCount() {
         return getCountOf(WinningStatus.WIN);
     }
     
@@ -49,7 +45,7 @@ public final class BlackjackJudge {
     
     private int getCountOf(final WinningStatus status) {
         return (int) playerBlackjackCardHands.stream()
-                .filter(player -> WinningStatus.determineWinningStatus(dealerBlackjackCardHand, player) == status)
+                .filter(player -> player.determineWinningStatus(dealerBlackjackCardHand.getCardHandState()) == status)
                 .count();
     }
     
@@ -58,7 +54,7 @@ public final class BlackjackJudge {
             throw new IllegalArgumentException("존재하지 않는 플레이어 손패입니다.");
         }
         
-        return WinningStatus.determineWinningStatus(playerBlackjackCardHand, dealerBlackjackCardHand);
+        return playerBlackjackCardHand.determineWinningStatus(dealerBlackjackCardHand.getCardHandState());
     }
     
     public Map<Player, WinningStatus> getWinningStatusOfAllPlayers() {

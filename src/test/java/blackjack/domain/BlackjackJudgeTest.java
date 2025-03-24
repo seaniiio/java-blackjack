@@ -53,7 +53,7 @@ public class BlackjackJudgeTest {
         // expected
         assertDoesNotThrow(() -> new BlackjackJudge(dealerHand, playerHands));
     }
-    
+
     @Test
     void 블랙잭심판은_딜러의_블랙잭_승리_갯수를_확인할_수_있다() {
         // given
@@ -61,13 +61,13 @@ public class BlackjackJudgeTest {
         final PlayerBlackjackCardHand mayCardHand = new PlayerBlackjackCardHand(new Player("may"), () -> List.of(HEART_2, HEART_3));
         final List<PlayerBlackjackCardHand> playerHands = List.of(dompooCardHand, mayCardHand);
         final DealerBlackjackCardHand dealerHand = new DealerBlackjackCardHand(() -> List.of(HEART_1, DIAMOND_10));
-        
+
         final BlackjackJudge blackjackJudge = new BlackjackJudge(dealerHand, playerHands);
-        
+
         // expected
         assertThat(blackjackJudge.getDealerBlackjackWinningCount()).isEqualTo(2);
     }
-    
+
     @Test
     void 블랙잭심판은_딜러의_승리_갯수를_확인할_수_있다() {
         // given
@@ -75,11 +75,11 @@ public class BlackjackJudgeTest {
         final PlayerBlackjackCardHand mayCardHand = new PlayerBlackjackCardHand(new Player("may"), () -> List.of(HEART_2, HEART_3));
         final List<PlayerBlackjackCardHand> playerHands = List.of(dompooCardHand, mayCardHand);
         final DealerBlackjackCardHand dealerHand = new DealerBlackjackCardHand(() -> List.of(DIAMOND_1, HEART_5));
-        
+
         final BlackjackJudge blackjackJudge = new BlackjackJudge(dealerHand, playerHands);
-        
+
         // expected
-        assertThat(blackjackJudge.getDealerWinningCount()).isEqualTo(1);
+        assertThat(blackjackJudge.getDealerBlackjackWinningCount()).isEqualTo(1);
     }
     
     @Test
@@ -90,9 +90,9 @@ public class BlackjackJudgeTest {
         final PlayerBlackjackCardHand lisaCardHand = new PlayerBlackjackCardHand(new Player("lisa"), () -> List.of(DIAMOND_1, HEART_8));
         final List<PlayerBlackjackCardHand> playerHands = List.of(dompooCardHand, mayCardHand, lisaCardHand);
         final DealerBlackjackCardHand dealerHand = new DealerBlackjackCardHand(() -> List.of(DIAMOND_1, HEART_5));
-        
+
         final BlackjackJudge blackjackJudge = new BlackjackJudge(dealerHand, playerHands);
-        
+
         // expected
         assertThat(blackjackJudge.getDealerLosingCount()).isEqualTo(2);
     }
@@ -105,9 +105,9 @@ public class BlackjackJudgeTest {
         final PlayerBlackjackCardHand lisaCardHand = new PlayerBlackjackCardHand(new Player("lisa"), () -> List.of(DIAMOND_1, HEART_8));
         final List<PlayerBlackjackCardHand> playerHands = List.of(dompooCardHand, mayCardHand, lisaCardHand);
         final DealerBlackjackCardHand dealerHand = new DealerBlackjackCardHand(() -> List.of(DIAMOND_1, HEART_5));
-        
+
         final BlackjackJudge blackjackJudge = new BlackjackJudge(dealerHand, playerHands);
-        
+
         // expected
         assertThat(blackjackJudge.getDealerDrawingCount()).isEqualTo(1);
     }
@@ -142,7 +142,7 @@ public class BlackjackJudgeTest {
         // expected
         assertThat(blackjackJudge.getWinningStatusOf(dompooCardHand)).isEqualTo(winningStatus);
     }
-    
+
     private static Stream<Arguments> provideCardsAndWinningStatus() {
         return Stream.of(
                 Arguments.of(List.of(DIAMOND_10, DIAMOND_9), WinningStatus.WIN),
@@ -150,26 +150,26 @@ public class BlackjackJudgeTest {
                 Arguments.of(List.of(DIAMOND_10, HEART_5), WinningStatus.LOSE)
         );
     }
-    
+
     @Test
     void 블랙잭심판은_모든_플레이어의_승패_결과를_한_번에_알_수_있다() {
         // given
         Player firstPlayer = new Player("dompoo");
         Player secondPlayer = new Player("may");
-        
+
         PlayerBlackjackCardHand firstPlayerCardHand = new PlayerBlackjackCardHand(firstPlayer, () -> List.of(DIAMOND_1, DIAMOND_10));
         PlayerBlackjackCardHand secondPlayerCardHand = new PlayerBlackjackCardHand(secondPlayer, () -> List.of(HEART_1, HEART_5));
         List<PlayerBlackjackCardHand> playerCardHands = List.of(firstPlayerCardHand, secondPlayerCardHand);
-        
+
         // when
         DealerBlackjackCardHand dealerBlackjackCardHand = new DealerBlackjackCardHand(() -> List.of(HEART_8, HEART_9));
         BlackjackJudge blackjackJudge = new BlackjackJudge(dealerBlackjackCardHand, playerCardHands);
-        
+
         // then
         Map<Player, WinningStatus> expected = new HashMap<>();
         expected.put(firstPlayer, blackjackJudge.getWinningStatusOf(firstPlayerCardHand));
         expected.put(secondPlayer, blackjackJudge.getWinningStatusOf(secondPlayerCardHand));
-        
+
         Assertions.assertThat(blackjackJudge.getWinningStatusOfAllPlayers())
                 .containsAllEntriesOf(expected);
     }

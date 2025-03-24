@@ -1,20 +1,23 @@
 package blackjack.domain.card_hand;
 
+import blackjack.domain.WinningStatus;
+import blackjack.domain.card_hand.state.BlackjackCardHandState;
+import blackjack.domain.card_hand.state.running.Start;
 import java.util.List;
 
 import blackjack.domain.card.Card;
 import blackjack.domain.deck.CardDrawer;
 import blackjack.domain.deck.BlackjackCardHandInitializer;
 
-public final class DealerBlackjackCardHand implements BlackjackWinDeterminable {
+public final class DealerBlackjackCardHand {
     
     private static final int DEALER_DRAW_THRESHOLD = 16;
     
-    private final BlackjackCardHand cardHand;
+    private BlackjackCardHandState cardHandState;
     
     public DealerBlackjackCardHand(final BlackjackCardHandInitializer initializer) {
         validateNotNull(initializer);
-        this.cardHand = new BlackjackCardHand(initializer);
+        cardHandState = new Start(initializer).initializeCards();
     }
     
     private void validateNotNull(final BlackjackCardHandInitializer initializer) {
@@ -24,26 +27,28 @@ public final class DealerBlackjackCardHand implements BlackjackWinDeterminable {
     }
     
     public List<Card> getInitialCards() {
-        return List.of(cardHand.getCards().getFirst());
+        return List.of(cardHandState.getCards().getFirst());
     }
     
     public void startAdding(final CardDrawer cardDrawer) {
-        while (cardHand.getBlackjackSum() <= DEALER_DRAW_THRESHOLD) {
-            cardHand.addCard(cardDrawer.draw());
+        while (cardHandState.getBlackjackSum() <= DEALER_DRAW_THRESHOLD) {
+            cardHandState = cardHandState.addCard(cardDrawer.draw());
         }
     }
-    
+
+    public BlackjackCardHandState getCardHandState() {
+        return cardHandState;
+    }
+
     public List<Card> getCards() {
-        return cardHand.getCards();
+        return cardHandState.getCards();
     }
-    
-    @Override
+
+    public WinningStatus determineWinningStatus(BlackjackCardHandState otherState) {
+        return cardHandState.determineWinningStatus(otherState);
+    }
+
     public int getBlackjackSum() {
-        return cardHand.getBlackjackSum();
-    }
-    
-    @Override
-    public int getSize() {
-        return cardHand.getCards().size();
+        return cardHandState.getBlackjackSum();
     }
 }
